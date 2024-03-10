@@ -1,9 +1,9 @@
-const pool = require("../../config/dbConfig");
+const pool = require("../../config/dbConfig.js");
 
 module.exports = {
   logInUserbyName: (name, callback) => {
     pool.query(
-      `SELECT name,password,newUser From userdetails WHERE name=?`,
+      `SELECT BranchUser_id,FirstName,Password,NewUser,branchLocation From BranchUser WHERE FirstName=?`,
       [name],
       (error, result, feilds) => {
         if (error) {
@@ -15,7 +15,7 @@ module.exports = {
   },
   resetNewPassword: (name, password, callback) => {
     pool.query(
-      `UPDATE userdetails SET password=?,newUser=? WHERE name=?`,
+      `UPDATE BranchUser SET Password=?,NewUser=? WHERE FirstName=?`,
       [password, "F", name],
       (error, result, feilds) => {
         if (error) {
@@ -27,7 +27,7 @@ module.exports = {
   },
   verifyEmail: (name, callback) => {
     pool.query(
-      `SELECT email FROM userdetails WHERE name=?`,
+      `SELECT Email FROM BranchUser WHERE FirstName=?`,
       [name],
       (error, result, feilds) => {
         if (error) {
@@ -38,7 +38,7 @@ module.exports = {
     );
   },
   getUsers: (callback) => {
-    pool.query(`SELECT * FROM userdetails`, [], (error, result, feilds) => {
+    pool.query(`SELECT * FROM BranchUser`, [], (error, result, feilds) => {
       if (error) {
         return callback(error);
       }
