@@ -43,7 +43,7 @@ module.exports = {
       }
       if (result) {
         console.log(result);
-        if (result[0].email == email) {
+        if (result[0].Email == email) {
           SendMail(email, (err, result) => {
             if (err) {
               console.log(err);
@@ -107,7 +107,6 @@ module.exports = {
   },
   logInUser: (req, res) => {
     const { name, password } = req.body;
-
     logInUserbyName(name, (err, result) => {
       if (err) {
         return res.json({
@@ -122,7 +121,7 @@ module.exports = {
         });
       }
       if (result) {
-        const flag = compareSync(password, result[0].password);
+        const flag = compareSync(password, result[0].Password);
         if (flag) {
           const jsonToken = sign(
             { userName: name },
@@ -155,7 +154,7 @@ module.exports = {
         });
       }
       if (result) {
-        const flag = compareSync(data.oldPassword, result[0].password);
+        const flag = compareSync(data.oldPassword, result[0].Password);
         if (flag) {
           resetNewPassword(data.userName, data.newpassword, (err, result) => {
             if (err) {
