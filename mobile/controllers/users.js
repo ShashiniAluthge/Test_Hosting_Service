@@ -105,8 +105,9 @@ module.exports = {
       }
     });
   },
-  logInUser: (req, res) => {
+  logInUser: (req, res)=>{  /// api/mobile/users/login/{name:nnn,password:njnn}
     const { name, password } = req.body;
+    //const name1=req.body.name;
     logInUserbyName(name, (err, result) => {
       if (err) {
         return res.json({
