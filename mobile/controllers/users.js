@@ -105,7 +105,8 @@ module.exports = {
       }
     });
   },
-  logInUser: (req, res)=>{  /// api/mobile/users/login/{name:nnn,password:njnn}
+  logInUser: (req, res) => {
+    //console.log("hello world");
     const { name, password } = req.body;
     //const name1=req.body.name;
     logInUserbyName(name, (err, result) => {
@@ -116,7 +117,7 @@ module.exports = {
         });
       }
       if (result.length == 0) {
-        return res.json({
+        return res.status.json({
           success: 101,
           message: "no user found",
         });
@@ -124,14 +125,15 @@ module.exports = {
       if (result) {
         const flag = compareSync(password, result[0].Password);
         if (flag) {
-          const jsonToken = sign(
-            { userName: name },
-            process.env.JWT_SECERET_KEY
-          );
+          // code for issuwing jwt token
+          // const jsonToken = sign(
+          //   { userName: name },
+          //   process.env.JWT_SECERET_KEY
+          // );
           return res.json({
             success: 200,
             message: result,
-            token: jsonToken,
+            //token: jsonToken,
           });
         } else {
           return res.json({
