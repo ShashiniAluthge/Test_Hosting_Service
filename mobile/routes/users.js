@@ -2,7 +2,7 @@ const route = require("express").Router();
 const { checkToken } = require("../middleware/checkToken.js");
 const {
   getUsers,
-  verifyEmail,
+  verifyEmail, //  api/mobile/users/   login
   resendOtp,
   logInUser,
   resetPassword,
