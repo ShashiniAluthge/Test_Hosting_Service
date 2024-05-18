@@ -3,8 +3,7 @@ const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 
 module.exports = {
 AdminLogin: (req, res) => {
-    const username = req.params.username
-    CheckUsernamePassword(username, (err, result) => {
+    CheckUsernamePassword(req.body.username, (err, result) => {
       if (err) {
         return res.json({
           success: 0,
@@ -14,15 +13,23 @@ AdminLogin: (req, res) => {
       if (result.length == 0) {
         return res.json({
             success: 0,
-            message: "Invalid Username",
+            message: "invalid username",
           });
       }
 
       if (result) {
+          if(compareSync(req.body.password, result[0].password)){
+            return res.json({
+              success: 1,
+              message: "correct password",
+            })
+          }
+          else{
           return res.json({
-            success: 1,
-            message: "success",
+            success: 0,
+            message: "incorrect password",
           });
+        }
       }
     });
   },
@@ -31,12 +38,6 @@ AddAdmin: (req, res) => {
     const salt = genSaltSync(10);
     const username = req.body.username
     const Password = hashSync(req.body.password, salt);
-
-
-
-    console.log(username)
-    console.log(Password)
-
     AddAdmin(username,Password,(err, result) => {
       if (err) {
         return res.json({
@@ -44,16 +45,10 @@ AddAdmin: (req, res) => {
           message: err,
         });
       }
-      if (result.length == 0) {
-        return res.json({
-            success: 0,
-            message: "Invalid Username",
-          });
-      }
       if (result) {
           return res.json({
             success: 1,
-            message: "success",
+            message: "successfully added admin",
           });
       }
     });

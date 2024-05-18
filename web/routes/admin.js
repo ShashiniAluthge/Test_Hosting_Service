@@ -3,7 +3,7 @@ const {AdminLogin,AddAdmin} = require("../controllers/admin.js");
 
 
 
-route.get("/:username", AdminLogin);
+route.post("/", AdminLogin);
 
 route.post("/addAdmin", AddAdmin);
 
