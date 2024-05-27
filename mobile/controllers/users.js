@@ -126,14 +126,14 @@ module.exports = {
         const flag = compareSync(password, result[0].Password);
         if (flag) {
           // code for issuwing jwt token
-          // const jsonToken = sign(
-          //   { userName: name },
-          //   process.env.JWT_SECERET_KEY
-          // );
+          const jsonToken = sign(
+            { userName: name },
+            process.env.JWT_SECERET_KEY
+          );
           return res.json({
             success: 200,
             message: result,
-            //token: jsonToken,
+            token: jsonToken,
           });
         } else {
           return res.json({
