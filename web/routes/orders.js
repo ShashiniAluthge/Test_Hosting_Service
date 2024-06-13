@@ -1,6 +1,7 @@
 const webOrderRouter = require ("express").Router();
-const {getOrderDetailsById}=require("../controllers/orders.js")
+const {getOrderDetailsById,CreateOrder}=require("../controllers/orders.js")
 
 webOrderRouter.get("/orderDetails/:orderId",getOrderDetailsById);
+webOrderRouter.post("/",CreateOrder);
 
 module.exports = webOrderRouter; 
