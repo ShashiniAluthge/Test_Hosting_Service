@@ -40,9 +40,9 @@ module.exports = {
     });
   },
   updatePendingState: (req, res) => {
-    order_id = Number(req.params.branchLocation);
+    order_id = Number(req.params.order_id);
     console.log(typeof order_id);
-    user_id = Number(req.body.user_id);
+    user_id = Number(req.params.user_id);
     console.log(typeof user_id);
     updatePendingState(order_id, user_id, (error, result) => {
       if (error) {
@@ -52,10 +52,18 @@ module.exports = {
         });
       }
       if (result) {
-        return res.json({
-          success: 0,
+        console.log(result)
+        if(result.affectedRows>0){
+          return res.json({
+            success: 200,
           message: result,
-        });
+          })
+        }else{
+          return res.json({
+            success:101,
+            message:"The order is choosen!Try again"
+          })
+        }
       }
     });
   },
