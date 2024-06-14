@@ -4,7 +4,7 @@ const admin = require("../controllers/admin.js");
 module.exports={
     CheckUsernamePassword: (username, callback) => {
         pool.query(
-          `SELECT password From Admin WHERE Email=?`,
+          `SELECT password,admin_Id From Admin WHERE Email=?`,
           [username],
           (error, result, feilds) => {
             if (error) {

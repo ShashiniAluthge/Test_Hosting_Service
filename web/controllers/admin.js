@@ -1,5 +1,8 @@
 const {CheckUsernamePassword,AddAdmin,GetAccountInfo,ChangeUserName,ChangeContact,CheckPrePassword,ChangePassword} = require("../services/admin.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
+var jwt = require('jsonwebtoken');
+const admin = require("../services/admin.js");
+require('dotenv').config()
 
 module.exports = {
 AdminLogin: (req, res) => {
@@ -18,11 +21,13 @@ AdminLogin: (req, res) => {
       }
 
       if (result) {
- 
+       // var token = jwt.sign({"username":req.body.userName},process.env.TOKEN); 
           if(compareSync(req.body.password, result[0].password)){
             return res.json({
               success: 1,
               message: "correct password",
+              adminID: result[0].admin_Id
+              // token:token,
             })
           }
           else{
