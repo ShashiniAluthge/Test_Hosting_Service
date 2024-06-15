@@ -1,4 +1,4 @@
-const {CheckUsernamePassword,AddAdmin,GetAccountInfo,ChangeUserName,ChangeContact,CheckPrePassword,ChangePassword} = require("../services/admin.js");
+const {CheckUsernamePassword,AddAdmin,GetAccountInfo,ChangeUserName,ChangeContact,CheckPrePassword,ChangePassword,getRegCount} = require("../services/admin.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 var jwt = require('jsonwebtoken');
 const admin = require("../services/admin.js");
@@ -171,4 +171,19 @@ AddAdmin: (req, res) => {
      }
     
    },
+
+   getRegCount: (req, res) => {
+    getRegCount((error,result) => {
+      if (error){
+        res.json({
+          success:0,
+          message:error,
+        })
+      }
+      return res.json({
+        success:200,
+        message:result,
+      });
+    })
+   }
 }

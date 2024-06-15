@@ -87,4 +87,16 @@ module.exports={
         );
       },
       
+      getRegCount:(callback) => {
+        pool.query(`SELECT COUNT(BranchUser_id) AS regPerCount
+          FROM BranchUser`,
+        [],
+      (error,results,feilds)=>{
+        if(error){
+          return callback(error);
+        }
+        const counts = results[0];
+        return callback(null,counts);
+      })
+      }
 }
