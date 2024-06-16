@@ -1,4 +1,4 @@
-const {getOrderDetailsById,CreateOrder} = require("../services/orders")
+const {getOrderDetailsById,CreateOrder,getOrderCounts} = require("../services/orders")
 
 module.exports ={
     getOrderDetailsById: (req ,res) =>{
@@ -48,6 +48,20 @@ module.exports ={
         //         })
         //     }
         // })
+    },
+    getOrderCounts: (req ,res) =>{
+        getOrderCounts((error,result) => {
+            if(error){
+                res.json({
+                    success:0,
+                    message:error,
+                })
+            }
+            return res.json({
+                success: 200,
+                message: result,
+            });
+        })
     }
 
 }

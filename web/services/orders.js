@@ -42,4 +42,23 @@ module.exports={
             return callBack(null,results);
         })
     },
+
+    getOrderCounts: (callBack) => {
+        const query = `
+            SELECT 
+                COUNT(CASE WHEN Status = 'PENDING' THEN 1 END) AS pendingCount,
+                COUNT(CASE WHEN Status = 'ONPICK' THEN 1 END) AS onpickCount,
+                COUNT(CASE WHEN Status = 'ONDILIVERY' THEN 1 END) AS ondiliveryCount,
+                COUNT(CASE WHEN Status = 'DILIVERED' THEN 1 END) AS completeCount
+            FROM Orders;
+        `;
+    
+        pool.query(query, (error, results, fields) => {
+            if (error) {
+                return callBack(error);
+            }
+            const counts = results[0];
+            return callBack(null, counts);
+        });
+    }
 }
