@@ -6,6 +6,9 @@ const {
   resetNewPassword,
   verifyEmail,
   getUsers,
+  storeOtpInTable,
+  verifyOtp,
+  deleteOtp
 } = require("../services/users.js");
 
 module.exports = {
@@ -53,15 +56,28 @@ module.exports = {
               });
             }
             if (result) {
-              console.log(result);
-              return res.json({
-                success: 200,
-                message: result,
-              });
+              console.log(result[1]);
+              storeOtpInTable(email,result,(error,result)=>{
+                if(error){
+                  return res.json({
+                    success:0,
+                    message:error
+                  })
+                }else if(result.affectedRows>0){
+                  return res.json({
+                    success:200,
+                    message:'successfully updated'
+                  })  
+                }else{
+                  return res.json({
+                    success:101,
+                    message:'Try Again!'
+                  })
+                }
+              })
             }
           });
         } else {
-          console.log("no email");
           return res.json({
             success: 101,
             message: "Email is not correct",
@@ -71,18 +87,38 @@ module.exports = {
     });
   },
   resendOtp: (req, res) => {
-    console.log(req.body.email);
-    SendMail(req.body.email, (error, result) => {
+    const email=req.params.email
+    SendMail(email, (error, result) => {
       if (error) {
         return res.json({
-          success: 100,
+          success: 0,
           message: error,
         });
-      } else if (result) {
-        return res.json({
-          success: 200,
-          message: result,
-        });
+      } else if (result.length !=0) {
+        storeOtpInTable(email,result,(error,result)=>{
+          if(error){
+            return res.json({
+              success:0,
+              message:error
+            })
+          }else if(result.affectedRows>0){
+            return res.json({
+              success:200,
+              message:'successfully updated'
+            })  
+          }else{
+            return res.json({
+              success:101,
+              message:'Try Again!'
+            })
+          }
+        })      
+      }
+      else{
+        res.json({
+          success:101,
+          message:'Try Again!'
+        })
       }
     });
   },
@@ -182,4 +218,65 @@ module.exports = {
       }
     });
   },
+  verifyOtp:(req,res)=>{
+    const email=req.params.email;
+    const otp=req.params.otp;
+    verifyOtp(email,(error,result)=>{
+      if(error){
+        res.json({
+          success:0,
+          message:error
+        })
+      }
+      else if(result.length != 0){
+        console.log(new Date(result[0].Expires_at).getTime()>=Date.now());
+        if(new Date(result[0].Expires_at).getTime()>=Date.now()){
+          if(result[0].Otp==otp){
+            res.json({
+              success:200,
+              message:'sucessfully verified!'
+            })
+          }else{
+            res.json({
+              success:101,
+              message:'Wrong OTP!'
+            })
+          }
+        }
+        else{
+          res.json({
+            success:101,
+            message:'OTP has expired!'
+          })
+        }  
+      }
+      else{
+        res.json({
+          success:101,
+          message:'Try Again!'
+        })
+      }
+    })
+  },
+  deleteOtp:(req,res)=>{
+    const email=req.params.email;
+    deleteOtp(email,(error,result)=>{
+      if(error){
+        res.json({
+          success:0,
+          message:error
+        })
+      }else if(result.affectedRows>0){
+        res.json({
+          success:200,
+          message:"successfully deleted!"
+        })
+      }else{
+        res.json({
+          success:101,
+          message:"OTP doesn't deleted!"
+        })
+      }
+    })
+  }
 };

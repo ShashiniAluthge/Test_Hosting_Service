@@ -13,7 +13,7 @@ const {
 const {checkToken} = require("../middleware/checkToken");
 
 orderRoute.get("/:branchLocation",checkToken,getPendingOrders);
-orderRoute.post("/updatePendingState/:branchLocation",checkToken,updatePendingState);
+orderRoute.post("/updatePendingState/:order_id/:user_id",updatePendingState);
 orderRoute.get("/getOrderDetails/:order_id",checkToken,getOrderDetails);
 orderRoute.get("/getToDoOrders/:branchLocation/:user_id",checkToken,getToDoOrderList);
 orderRoute.patch("/cancelToDoOrder/:order_id",checkToken,cancelToDoOrder);

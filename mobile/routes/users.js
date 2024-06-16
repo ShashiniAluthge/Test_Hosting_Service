@@ -7,14 +7,18 @@ const {
   logInUser,
   resetPassword,
   resetForgotPassword,
+  verifyOtp,
+  deleteOtp
 } = require("../controllers/users.js");
 
 route.get("/",checkToken,getUsers);
 route.post("/verifyEmail", verifyEmail);
-route.post("/resendOtp", resendOtp);
+route.get("/resendOtp/:email", resendOtp);
 route.post("/login", logInUser);
 route.patch("/resetPassword",checkToken,resetPassword);
 route.patch("/resetForgotPassword", resetForgotPassword);
+route.get("/verifyOtp/:email/:otp",verifyOtp);
+route.delete("/deleteOtp/:email",deleteOtp);
 
 
 
