@@ -1,10 +1,20 @@
 const webOrderRouter = require ("express").Router();
 const { getOrderDetailsById,
         CreateOrder,
-        getOrderCounts}=require("../controllers/orders.js")
+        getOrderCounts,
+        getPendingOrdersList,
+        getCompleteOrderList,
+        getInprogressOrderList,
+        getPendingorderdetailsById,
+        getCompleteOrderdetailsById}=require("../controllers/orders.js")
 
 webOrderRouter.get("/orderDetails/:orderId",getOrderDetailsById);
 webOrderRouter.post("/",CreateOrder);
 webOrderRouter.get("/orderCounts",getOrderCounts);
+webOrderRouter.get("/pendingorderDetails",getPendingOrdersList);
+webOrderRouter.get("/completeorderDetails",getCompleteOrderList);
+webOrderRouter.get("/InprogressorderDetails",getInprogressOrderList);
+webOrderRouter.get("/pendingorderdetailsbyid/:id", getPendingorderdetailsById);
+webOrderRouter.get("/completeorderdetailsbyid/:id", getCompleteOrderdetailsById);
 
 module.exports = webOrderRouter; 
