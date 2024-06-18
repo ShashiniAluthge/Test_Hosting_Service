@@ -6,7 +6,9 @@ const { getOrderDetailsById,
         getCompleteOrderList,
         getInprogressOrderList,
         getPendingorderdetailsById,
-        getCompleteOrderdetailsById}=require("../controllers/orders.js")
+        getCompleteOrderdetailsById,
+        getinprogressOrderdetailsById
+        }=require("../controllers/orders.js")
 
 webOrderRouter.get("/orderDetails/:orderId",getOrderDetailsById);
 webOrderRouter.post("/",CreateOrder);
@@ -16,5 +18,7 @@ webOrderRouter.get("/completeorderDetails",getCompleteOrderList);
 webOrderRouter.get("/InprogressorderDetails",getInprogressOrderList);
 webOrderRouter.get("/pendingorderdetailsbyid/:id", getPendingorderdetailsById);
 webOrderRouter.get("/completeorderdetailsbyid/:id", getCompleteOrderdetailsById);
+webOrderRouter.get("/inprogressorderdetailsbyid/:id", getinprogressOrderdetailsById);
+
 
 module.exports = webOrderRouter; 

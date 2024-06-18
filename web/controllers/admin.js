@@ -1,4 +1,4 @@
-const {CheckUsernamePassword,AddAdmin,GetAccountInfo,ChangeUserName,ChangeContact,CheckPrePassword,ChangePassword,getRegCount} = require("../services/admin.js");
+const {CheckUsernamePassword,AddAdmin,GetAccountInfo,ChangeUserName,ChangeContact,CheckPrePassword,ChangePassword,getRegCount,getAdminprofileDetails,getAdminprofileDetailsById} = require("../services/admin.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 var jwt = require('jsonwebtoken');
 const admin = require("../services/admin.js");
@@ -185,5 +185,57 @@ AddAdmin: (req, res) => {
         message:result,
       });
     })
-   }
+   },
+
+   getAdminprofileDetails: (req,res)=>{
+    //const id = req.params.id;
+    // console.log(id);
+    getAdminprofileDetails((error,results)=>{
+        if(error){
+            res.json({
+                success:0,
+                message:error
+            })
+        }
+        if(results.length==0){
+            res.json({
+                success:101,
+                message: "invalid order id"
+            })
+        }
+        else if(results){
+            res.json({
+                success: 200,
+                message:results
+               
+            })
+        }
+    })
+},
+
+getAdminprofileDetailsById: (req,res)=>{
+  const id = req.params.id;
+  // console.log(id);
+  getAdminprofileDetailsById(id,(error,results)=>{
+      if(error){
+          res.json({
+              success:0,
+              message:error
+          })
+      }
+      if(results.length==0){
+          res.json({
+              success:101,
+              message: "invalid order id"
+          })
+      }
+      else if(results){
+          res.json({
+              success: 200,
+              message:results
+             
+          })
+      }
+  })
+}
 }
