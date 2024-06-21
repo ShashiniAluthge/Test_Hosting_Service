@@ -2,7 +2,8 @@ const { verify } = require("jsonwebtoken");
 
 module.exports = {
   checkToken: (req, res, next) => {
-    const { token } = req.body;
+    const authHeader=req.headers['authorization'];
+    const token=authHeader && authHeader.split(' ')[1]
     console.log(token);
     if (token) {
       verify(token, process.env.JWT_SECERET_KEY, (err, decode) => {
