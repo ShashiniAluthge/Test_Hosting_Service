@@ -9,6 +9,8 @@ const { getOrderDetailsById,
         getCompleteOrderdetailsById,
         getinprogressOrderdetailsById
         }=require("../controllers/orders.js")
+const { protect,allowRoles } = require('../middleware/auth.js')
+
 
 webOrderRouter.get("/orderDetails/:orderId",getOrderDetailsById);
 webOrderRouter.post("/",CreateOrder);
