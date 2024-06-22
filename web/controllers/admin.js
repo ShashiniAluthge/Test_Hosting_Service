@@ -1,3 +1,4 @@
+
 const {
   CheckUsernamePassword,
   AddAdmin,
@@ -6,7 +7,11 @@ const {
   ChangeContact,
   CheckPrePassword,
   ChangePassword,
-} = require("../services/admin.js");
+  getRegCount,    
+  getAdminprofileDetails,
+  getAdminprofileDetailsById
+      } = require("../services/admin.js");
+
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const admin = require("../services/admin.js");
@@ -179,9 +184,79 @@ module.exports = {
       });
     } else {
       return res.json({
+
         success: 1,
         message: "Not match password",
       });
     }
   },
 };
+
+   getRegCount: (req, res) => {
+    getRegCount((error,result) => {
+      if (error){
+        res.json({
+          success:0,
+          message:error,
+        })
+      }
+      return res.json({
+        success:200,
+        message:result,
+      });
+    })
+   },
+
+   getAdminprofileDetails: (req,res)=>{
+    //const id = req.params.id;
+    // console.log(id);
+    getAdminprofileDetails((error,results)=>{
+        if(error){
+            res.json({
+                success:0,
+                message:error
+            })
+        }
+        if(results.length==0){
+            res.json({
+                success:101,
+                message: "invalid order id"
+            })
+        }
+        else if(results){
+            res.json({
+                success: 200,
+                message:results
+               
+            })
+        }
+    })
+},
+
+getAdminprofileDetailsById: (req,res)=>{
+  const id = req.params.id;
+  // console.log(id);
+  getAdminprofileDetailsById(id,(error,results)=>{
+      if(error){
+          res.json({
+              success:0,
+              message:error
+          })
+      }
+      if(results.length==0){
+          res.json({
+              success:101,
+              message: "invalid order id"
+          })
+      }
+      else if(results){
+          res.json({
+              success: 200,
+              message:results
+             
+          })
+      }
+  })
+}
+}
+

@@ -14,6 +14,7 @@ app.use(cookieParser())
 const userRouter = require("./mobile/routes/users");  //  api/mobile/users/login
 const orderRouter = require("./mobile/routes/orders.js");
 const webOrderRouter = require("./web/routes/orders.js");
+const webBranchuser = require("./web/routes/branchuser.js");
 
 
 const webAdmin = require("./web/routes/admin.js")
@@ -25,5 +26,6 @@ app.use("/api/mobile/orders", orderRouter);
 
 app.use("/orders", webOrderRouter);
 app.use("/admin", webAdmin);
+app.use("/branchuser",webBranchuser);
 
 app.listen(9000, () => console.log("App is listning on 9000"));
