@@ -1,34 +1,45 @@
-var jwt = require('jsonwebtoken');
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
 
-module.exports = function(req,res,next){
-const token = req.headers["access_token"]
+const jwtSecret = process.env.JWT_SECRET;
 
-if(!token){
-    return res.json("no token")
-}else{
-    jwt.verify(token,process.env.TOKEN,(err,user)=>{
-        if(err){
-            return res.json("not authenticate") 
-        }else{
-            next()
+const protect = async (req, res, next) => {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+
+        try {
+            
+            const decoded = jwt.verify(token,jwtSecret);
+            
+
+            if (!decoded) {
+                return res.status(404).json({success: false , message: "User not found with this token"})
+
+            }
+
+            req.user = decoded;
+            // console.log(decoded);
+            
+
+            next();
+        } catch (error) {
+            return res.status(401).json({success: false , message: "Not authorized, token failed"})
         }
-    })
+    } else {
+        return res.status(401).json({success: false , message: "No token provided, authorization denied"})
+    }
+};
+
+const allowRoles = (...roles) => {
+  return (req, res, next) => {
+      console.log(req.user.user.role);
+      if(!roles.includes(req.user.user.role)){
+          return res.status(403).json({success: false , message: "Not authorized to access this route"})
+      }
+      next();
+  }
 }
 
-
-
-
-
-    // if(req.headers.authorization && req.headers.authorization.startsWith('bearer')){
-    //     const token = req.headers.authorization.split(' ')[1];
-    //     if(token==null) res.sendStatus(401)
-    //         jwt.verify(token,process.env.TOKEN,(err,user)=>{
-    //     if(err) res.sendStatus(403)
-    //         req.user = user;
-    //         next();
-    //     })
-    // }else{
-    //     res.sendStatus(401)
-    // }
-}
+module.exports = { protect, allowRoles };

@@ -15,8 +15,7 @@ module.exports = {
       }
     );
   },
-  SenderTable: (data) => {
-   
+  SenderTable: (data) => { 
     return new Promise((resolve, reject) => {
       pool.query(
         `insert into Customer (FirstName,LastName,StreetNo,Street,City) values(?,?,?,?,?)`,
@@ -67,7 +66,7 @@ module.exports = {
           data.pstreetNo,
           data.pstreet,
           data.phometown,
-          "PENDING",
+          "VERIFYCONFIRM",
           data.pimergency,
           data.pbranch,
           data.pdistancecost,

@@ -34,14 +34,16 @@ module.exports = {
   },
 
   CreateOrder: async (req, res) => {
+   
     const data = req.body;
-    console.log(data)
+    //console.log(data)
+   
     try {
         await SenderTable(data);
         await RecieverTable(data);
         const senderID = await GetsenderID();
         const recieverID = await GetRecieverID();
-        console.log(senderID,recieverID)
+        //console.log(senderID,recieverID)
         await SenderTele(senderID,data.stelephone)
         await RecieverTele(recieverID,data.rtelephone)
         await OrderTable(data,recieverID,senderID)
