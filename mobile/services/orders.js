@@ -18,16 +18,37 @@ module.exports = {
     );
   },
   updatePendingState: (order_id, user_id, callback) => {
+    // i have used SELECT.....FOR UPDATE as exclusive lock to prevent updating same order at same time 
+    //multiple request. i have to check whether it is working
     pool.query(
-      `UPDATE Orders SET Status='ONPICK',BranchUser_id=? WHERE Order_id=?`,
-      [user_id, order_id],
-      (error, result, feilds) => {
-        if (error) {
-          return callback(error);
+      `SELECT * FROM Orders WHERE Order_id=? FOR UPDATE`,
+      [order_id],
+      (error,result,feilds)=>{
+        if(error){
+          return callback;
+        }if(result){
+          pool.query(`UPDATE Orders SET Status='ONPICK',BranchUser_id=? WHERE Order_id=? AND Status=?`,
+            [user_id,order_id,'PENDING'],
+            (error,result,feilds)=>{
+              if(error){
+                return callback(error)
+              }
+              return callback(null,result)
+            }
+          )
         }
-        return callback(null, result);
       }
-    );
+    )
+    // pool.query(
+    //   `UPDATE Orders SET Status='ONPICK',BranchUser_id=? WHERE Order_id=?`,
+    //   [user_id, order_id],
+    //   (error, result, feilds) => {
+    //     if (error) {
+    //       return callback(error);
+    //     }
+    //     return callback(null, result);
+    //   }
+    // );
   },
   getOrderDetails: (order_id, callback) => {
     pool.query(

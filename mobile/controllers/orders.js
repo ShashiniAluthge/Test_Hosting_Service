@@ -23,7 +23,6 @@ const {
   getDataForTodoMail
 } = require("../services/orders");
 
-
 module.exports = {
   getPendingOrders: (req, res) => {
     console.log("in side this....");
@@ -50,9 +49,9 @@ module.exports = {
     });
   },
   updatePendingState: (req, res) => {
-    order_id = Number(req.params.branchLocation);
+    order_id = Number(req.params.order_id);
     console.log(typeof order_id);
-    user_id = Number(req.body.user_id);
+    user_id = Number(req.params.user_id);
     console.log(typeof user_id);
     updatePendingState(order_id, user_id, (error, result) => {
       if (error) {
@@ -72,6 +71,7 @@ module.exports = {
           success:101,
           message:'status doesnot change successfully'
         })
+
       }
     });
   },

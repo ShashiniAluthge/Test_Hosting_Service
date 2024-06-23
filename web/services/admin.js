@@ -3,8 +3,9 @@ const admin = require("../controllers/admin.js");
 
 module.exports={
     CheckUsernamePassword: (username, callback) => {
+      console.log(username)
         pool.query(
-          `SELECT password From Admin WHERE Email=?`,
+          `SELECT password,admin_Id From Admin WHERE Email=?`,
           [username],
           (error, result, feilds) => {
             if (error) {
@@ -87,4 +88,40 @@ module.exports={
         );
       },
       
+      getRegCount:(callback) => {
+        pool.query(`SELECT COUNT(BranchUser_id) AS regPerCount
+          FROM BranchUser`,
+        [],
+      (error,results,feilds)=>{
+        if(error){
+          return callback(error);
+        }
+        const counts = results[0];
+        return callback(null,counts);
+      })
+      },
+      getAdminprofileDetails: (callBack)=>{
+        pool.query(`SELECT a.admin_Id,a.FirstName,a.LastName,a.type,a.Tele,a.Email,am.mobile
+                    FROM Admin a, AdminMobile am
+                     WHERE  a.admin_Id=am.admin_Id`,[],
+                (error,results)=>{
+                    if(error){
+                        return callBack(error);
+                    }
+                    return callBack(null,results);
+                }
+            )
+     },
+     getAdminprofileDetailsById: (id,callBack)=>{
+      pool.query(`SELECT a.admin_Id,a.FirstName,a.LastName,a.type,a.Tele,a.Email,am.mobile
+                    FROM Admin a, AdminMobile am
+                   WHERE a.admin_Id=? AND a.admin_Id=am.admin_Id`,[id],
+              (error,results)=>{
+                  if(error){
+                      return callBack(error);
+                  }
+                  return callBack(null,results);
+              }
+          )
+   }
 }
