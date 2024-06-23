@@ -1,4 +1,5 @@
 const pool = require("../../config/dbConfig.js");
+const { updateDob } = require("../controllers/users.js");
 
 module.exports = {
   logInUserbyName: (name, callback) => {
@@ -45,4 +46,61 @@ module.exports = {
       return callback(null, result);
     });
   },
+  getProfileDetails: (user_id, callback) => {
+    pool.query(
+      `SELECT b.FirstName,b.LastName,b.StreetNo,b.Street,b.City,b.Email,bm.Mobile,b.DOB
+       FROM BranchUser b, BranchUserMobile bm
+       WHERE b.BranchUser_id=bm.BranchUser_id AND b.BranchUser_id = ?`,
+      [user_id],
+      (error, result,feilds) => {
+        if (error) {
+          return callback(error);
+        }
+        return callback(null, result);
+      }
+    );
+  },
+  updateName:(firstName,lastName,user_id,callback)=>{
+    pool.query(`UPDATE BranchUser SET FirstName=?,LastName=? WHERE BranchUser_id=?`,[firstName,lastName,user_id],
+      (error,result,feilds)=>{
+        if(error){
+          return callback(error)
+        }
+        return callback(null,result);
+      }
+    )
+  },
+  updateEmail:(email,user_id,callback)=>{
+    pool.query(`UPDATE BranchUser SET Email=? WHERE BranchUser_id=?`,[email,user_id],
+      (error,result,feilds)=>{
+        if(error){
+          return callback(error)
+        }
+        return callback(null,result)
+        
+      }
+    )
+  },
+  updateMobile:(mobile,user_id,callback)=>{
+    pool.query(
+      `UPDATE BranchUserMobile SET Mobile=? WHERE BranchUser_id=?`,[mobile,user_id],
+       (error,result,feilds)=>{
+        if(error){
+          return callback(error)
+        }
+        return callback(null,result)
+       }
+    )
+  },
+  updateDob:(dob,user_id,callback)=>{
+    pool.query(`UPDATE BranchUser SET DOB=? WHERE BranchUser_id=?`,[dob,user_id],
+      (error,result,feilds)=>{
+        if(error){
+          return callback(error)
+        }
+        return callback(null,result)
+        
+      }
+    )
+  }
 };

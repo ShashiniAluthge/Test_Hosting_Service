@@ -6,6 +6,11 @@ const {
   resetNewPassword,
   verifyEmail,
   getUsers,
+  getProfileDetails,
+  updateName,
+  updateEmail,
+  updateMobile,
+  updateDob
 } = require("../services/users.js");
 
 module.exports = {
@@ -117,7 +122,7 @@ module.exports = {
         });
       }
       if (result.length == 0) {
-        return res.status.json({
+        return res.status(101).json({
           success: 101,
           message: "no user found",
         });
@@ -182,4 +187,123 @@ module.exports = {
       }
     });
   },
+  getProfileDetails:(req,res)=>{
+    user_id = Number(req.params.user_id);
+    console.log(user_id)
+    getProfileDetails(user_id,(error,result)=>{
+      if(error){
+        return res.json({
+          success:0,
+          message:error.message
+        })
+      }
+      return res.json({
+        success:200,
+        message:result
+      })
+    })
+  },
+  updateName:(req,res)=>{
+    const user_id=req.params.user_id;
+    const{firstName,lastName}=req.body;
+    updateName(firstName,lastName,user_id,(error,result)=>{
+      if(error){
+        return res.json({
+          success:0,
+          message:error
+        })
+      }
+      
+      else if(result.affectedRows>0){
+        console.log(result);
+        return res.json({
+          success:200,
+          message:'update Successfull'
+        })
+      }
+      else{
+        return res.json({
+          success:101,
+          message:'update Not Successfull!'
+        })
+      }
+    })
+  },
+  updateEmail:(req,res)=>{
+    const user_id =req.params.user_id;
+    const email=req.body.email;
+
+    updateEmail(email,user_id,(error,result)=>{
+      if(error){
+        return res.json({
+          success:0,
+          message:error
+        })
+      }
+      else if(result.affectedRows>0){
+        console.log(result);
+        return res.json({
+          success:200,
+          message:'update successfull'
+        })
+      }
+      else{
+        return res.json({
+          success:101,
+          message:'update not successfull'
+        })
+      }
+    })
+  },
+  updateMobile:(req,res)=>{
+    const user_id = req.params.user_id;
+    const mobile = req.body.mobile
+
+    updateMobile(mobile,user_id,(error,result)=>{
+      if(error){
+        return res.json({
+          success:0,
+          message:error
+        })
+      }
+      else if(result.affectedRows>0){
+        return res.json({
+          success:200,
+          message:'update successfully'
+        })
+      }
+      else{
+        return res.json({
+          success:101,
+          message:'not update successfully'
+        })
+      }
+    })
+  },
+  updateDob:(req,res)=>{
+    const user_id = req.params.user_id;
+    const {currentDate} = req.body
+
+    updateDob(currentDate,user_id,(error,result)=>{
+      if(error){
+        return res.json({
+          success:0,
+          message:error
+        })
+      }
+      else if(result.affectedRows>0){
+        console.log("controller DOB ")
+        return res.json({
+          success:200,
+          message:'update successfully'
+        })
+      }
+      else{
+        return res.json({
+          success:101,
+          message:'not update successfully'
+        })
+      }
+    })
+  }
 };

@@ -3,7 +3,7 @@ const pool = require("../../config/dbConfig.js");
 module.exports = {
   getPendingOrders: (brancLocation, callback) => {
     pool.query(
-      `SELECT Order_id,Pickup_District,Emmergency,DiliveryDistrict,DiliveryProvince
+      `SELECT Order_id,Pickup_District,Emmergency,DiliveryDistrict,DiliveryProvince,orderPlaceDate
         FROM Orders o,Reciever r
         WHERE o.recieverId=r.recieverId AND
         branchLocation=? AND
@@ -31,7 +31,7 @@ module.exports = {
   },
   getOrderDetails: (order_id, callback) => {
     pool.query(
-      `SELECT c.FirstName AS FN,c.LastName AS LN,cm.mobile AS M,o.Pickup_District,o.Pickup_StreetNo,o.Pickup_Street,o.Pickup_City,r.FirstName,r.LastName,r.DiliveryDistrict,r.StreetNo,r.Street,r.City,rm.mobile
+      `SELECT c.FirstName AS FN,c.LastName AS LN,cm.mobile AS M,o.Pickup_District,o.Pickup_StreetNo,o.Pickup_Street,o.Pickup_City,o.orderPlaceDate,r.FirstName,r.LastName,r.DiliveryDistrict,r.StreetNo,r.Street,r.City,rm.mobile
        FROM Customer c , CustomerMobile cm , Orders o, Reciever r, RecieverMobile rm
        WHERE o.recieverId=r.recieverid AND r.recieverid=rm.recieverid AND o.cus_id=c.cus_id AND c.cus_id=cm.cus_id AND o.Order_Id=?`,
       [order_id],
@@ -45,7 +45,7 @@ module.exports = {
   },
   getToDoOrderList: (brancLocation, order_id, callback) => {
     pool.query(
-      `SELECT Order_id,Pickup_District,Emmergency,DiliveryDistrict,DiliveryProvince 
+      `SELECT Order_id,Pickup_District,Emmergency,DiliveryDistrict,DiliveryProvince,orderPlaceDate 
     FROM Orders o,Reciever r
     WHERE o.recieverId=r.recieverId AND
     branchLocation=? AND
@@ -88,15 +88,16 @@ module.exports = {
       }
     );
   },
-  updateWeightCost: (order_id, weightCost, callback) => {
+  updateWeightCost: (date, time, order_id, weight, weightCost, callback) => {
     pool.query(
       `UPDATE Orders
-    SET Weight_Cost=?,
-    Total_Cost=Distance_Cost+? 
+    SET Weight_Cost=?,pickup_Date=?,pickup_Time=?,
+    Total_Cost=Distance_Cost+?,weight=?
     WHERE Order_id=?`,
-      [weightCost, weightCost, order_id],
+      [weightCost, date, time, weightCost, weight, order_id],
       (error, result, feilds) => {
         if (error) {
+          console.log(error)
           return callback(error);
         }
         return callback(null, result);
@@ -108,9 +109,10 @@ module.exports = {
       `UPDATE Orders
     SET Status=?
     WHERE Order_id=?`,
-      ["VERIFYPICKED", order_id],
+      ["ONDILIVERY", order_id],
       (error, result, feilds) => {
         if (error) {
+          console.log(error);
           return callback(error);
         }
         return callback(null, result);
@@ -198,6 +200,38 @@ module.exports = {
       );
     });
   },
+  getVerifyPickedOrders: (user_id) => {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `SELECT COUNT(Order_id) AS verifyPickCount
+        FROM Orders
+        WHERE BranchUser_id=? AND Status=?`,
+        [user_id, "VERIFYPICKED"],
+        (error, result, feilds) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(result);
+        }
+      );
+    });
+  },
+  getVerifyDiliveryOrders: (user_id) => {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `SELECT COUNT(Order_id) AS verifyDiliveryCount
+        FROM Orders
+        WHERE BranchUser_id=? AND Status=?`,
+        [user_id, "VERIFYDILIVERY"],
+        (error, result, feilds) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(result);
+        }
+      );
+    });
+  },
   getSelectedProvince: (user_id) => {
     return new Promise((resolve, reject) => {
       pool.query(
@@ -205,16 +239,91 @@ module.exports = {
         FROM Reciever r, Orders o
         WHERE o.recieverId=r.recieverId 
         AND o.BranchUser_id=? 
-        AND (o.Status='ONPICK' OR o.Status='VERIFYPICKED')
+        AND (o.Status='ONPICK' OR o.Status='VERIFYPICKED' OR o.Status='ONDILIVERY')
         GROUP BY (DiliveryProvince)`,
         [user_id],
         (error, result, feilds) => {
           if (error) {
             reject(error);
           }
-          resolve(result);;
+          resolve(result);
         }
       );
     });
+  },
+  getOnDiliveryOrders: (user_id, callback) => {
+    pool.query(
+      `SELECT Order_id,Emmergency,Pickup_District,DiliveryDistrict,pickup_Date
+       FROM Orders o , Reciever r  
+       WHERE o.recieverId=r.recieverId AND Status='ONDILIVERY' AND o.BranchUser_id=?`,
+      [user_id],
+      (error, result, feilds) => {
+        if (error) {
+          return callback(error);
+        }
+        return callback(null, result);
+      }
+    );
+  },
+  updateOnDiliveryState: (order_id, callback) => {
+    pool.query(
+      `UPDATE Orders
+       SET Status = 'DILIVERED'
+       WHERE Order_id=?`,
+      [order_id],
+      (error, result, feilds) => {
+        if (error) {
+          return callback(error);
+        }
+        return callback(null, result);
+      }
+    );
+  },
+  getCompletedOrders: (userId, callback) => {
+    console.log(userId);
+    pool.query(
+      `SELECT Order_id,Emmergency,Pickup_District,DiliveryDistrict,Total_Cost,dilivery_Date
+       FROM Orders o , Reciever r
+       WHERE o.recieverId=r.recieverid AND Status='DILIVERED' AND BranchUser_id=?`,
+      [userId],
+      (error, result, fields) => {
+        if (error) {
+          return callback(error);
+        }
+        return callback(null, result);
+      }
+    );
+  },
+  getPerformanceDetails: (branchLocation, callback) => {
+    pool.query(
+      `SELECT BranchUser.BranchUser_id,FirstName,totalEarnings,COUNT(Status) AS CompletedOrders
+      FROM BranchUser,Orders
+      WHERE BranchUser.BranchUser_id=Orders.BranchUser_id
+      AND Orders.Status='DILIVERED' AND Orders.branchLocation=?
+      GROUP BY(BranchUser.BranchUser_id)
+      ORDER BY(CompletedOrders)`,
+      [branchLocation],
+      (error, result, feild) => {
+        if (error) {
+          return callback(error);
+        }
+        return callback(null, result);
+      }
+    );
+  },
+  getDataForTodoMail: (order_id, callback) => {
+    pool.query(
+      `SELECT O.Order_id,B.FirstName AS BranchUserName,BM.Mobile,R.FirstName AS RecieverName,C.FirstName AS CustomerName,O.weight,O.distance,O.Total_Cost,
+      O.Distance_Cost,O.Weight_Cost,O.pickup_Date,O.pickup_Time,C.Email AS CustomerEmail,R.Email AS RecieverEmail
+      FROM Orders O,BranchUser B,BranchUserMobile BM,Reciever R,Customer C
+      WHERE O.BranchUser_id=B.BranchUser_id AND BM.BranchUser_id=B.BranchUser_id AND O.recieverId=R.recieverId AND O.cus_id=C.cus_id AND O.Order_id=?`,
+      [order_id],
+      (error, result, feild) => {
+        if (error) {
+          callback(error);
+        }
+        return callback(null, result);
+      }
+    );
   },
 };

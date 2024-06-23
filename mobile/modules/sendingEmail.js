@@ -28,4 +28,65 @@ module.exports = {
       }
     });
   },
+
+  sendOrderPickUpMail:(values,callback)=>{
+
+    let transporter = nodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "ssshashini21@gmail.com",
+        pass: "nxtbmpobvwhkzwdj",
+      },
+    });
+
+    let customerMailOptions = {
+      from: "ssshashini21@gmial.com",
+      to: values.CustomerEmail,
+      subject: "Your Order has been picked up",
+      text: `Your Order ID: ${values.Order_id}
+             Your order Carried By: ${values.BranchUserName}
+             Courier Person Mobile: ${values.Mobile}
+             Order Recieved BY: ${values.RecieverName}
+             Order Sent BY: ${values.CustomerName}
+             Weight of the Order: ${values.weigh}
+             Distance in km: ${values.distance}
+             Weight Cost (Rs): ${values.Distance_Cost}
+             Distance Cost (Rs): ${values.Weight_Cost}
+             Total Cost (Rs): ${values.Total_Cost}
+             PickUp Date : ${values.pickup_Date}
+             PickUp Time : ${values.pickup_Time}`,
+    };
+
+    let recieverMailOptions = {
+      from: "ssshashini21@gmial.com",
+      to: values.RecieverEmail,
+      subject: "Your Order has been picked up",
+      text: `Your Order ID: ${values.Order_id}
+             Your order Carried By: ${values.BranchUserName}
+             Courier Person Mobile: ${values.Mobile}
+             Order Recieved BY: ${values.RecieverName}
+             Order Sent BY: ${values.CustomerName}
+             Weight of the Order: ${values.weigh}
+             Distance in km: ${values.distance}
+             Weight Cost (Rs): ${values.Distance_Cost}
+             Distance Cost (Rs): ${values.Weight_Cost}
+             Total Cost (Rs): ${values.Total_Cost}
+             PickUp Date : ${values.pickup_Date}
+             PickUp Time : ${values.pickup_Time}`,
+    };
+
+    transporter.sendMail(customerMailOptions,(error, info) => {
+      if (error) {
+        return callback(error);
+      } else {
+        transporter.sendMail(recieverMailOptions,(error,info)=>{
+          if(error){
+            return callback(error);
+          }else{
+            return callback(null,info);
+          }
+        })
+      }
+    });
+  }
 };
