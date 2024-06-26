@@ -75,7 +75,7 @@ module.exports = {
       [brancLocation, order_id, "ONPICK"],
       (error, result, feild) => {
         if (error) {
-          callback(error);
+          return callback(error);
         }
         return callback(null, result);
       }
@@ -166,9 +166,9 @@ module.exports = {
         [barnchLocation, "PENDING"],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+           return reject(error);
           }
-          resolve(result);
+         return resolve(result);
         }
       );
     });
@@ -182,9 +182,9 @@ module.exports = {
         [user_id, "ONPICK"],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+            return reject(error);
           }
-          resolve(result);
+          return resolve(result);
         }
       );
     });
@@ -198,9 +198,9 @@ module.exports = {
         [user_id, "ONDILIVERY"],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+           return reject(error);
           }
-          resolve(result);
+          return resolve(result);
         }
       );
     });
@@ -214,9 +214,9 @@ module.exports = {
         [user_id, "DILIVERED"],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+           return reject(error);
           }
-          resolve(result);
+          return resolve(result);
         }
       );
     });
@@ -230,9 +230,9 @@ module.exports = {
         [user_id, "VERIFYPICKED"],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+           return reject(error);
           }
-          resolve(result);
+         return resolve(result);
         }
       );
     });
@@ -246,9 +246,9 @@ module.exports = {
         [user_id, "VERIFYDILIVERY"],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+           return reject(error);
           }
-          resolve(result);
+         return resolve(result);
         }
       );
     });
@@ -260,21 +260,21 @@ module.exports = {
         FROM Reciever r, Orders o
         WHERE o.recieverId=r.recieverId 
         AND o.BranchUser_id=? 
-        AND (o.Status='ONPICK' OR o.Status='VERIFYPICKED' OR o.Status='ONDILIVERY')
+        AND (o.Status='ONPICK' OR o.Status='ONDILIVERY')
         GROUP BY (DiliveryProvince)`,
         [user_id],
         (error, result, feilds) => {
           if (error) {
-            reject(error);
+           return reject(error);
           }
-          resolve(result);
+         return resolve(result);
         }
       );
     });
   },
   getOnDiliveryOrders: (user_id, callback) => {
     pool.query(
-      `SELECT Order_id,Emmergency,Pickup_District,DiliveryDistrict,pickup_Date
+      `SELECT Order_id,Emmergency,Pickup_District,DiliveryDistrict,pickup_Date,DiliveryProvince
        FROM Orders o , Reciever r  
        WHERE o.recieverId=r.recieverId AND Status='ONDILIVERY' AND o.BranchUser_id=?`,
       [user_id],
@@ -286,12 +286,12 @@ module.exports = {
       }
     );
   },
-  updateOnDiliveryState: (order_id, callback) => {
+  updateOnDiliveryState: (order_id,diliveryDate,diliveryTime,callback) => {
     pool.query(
       `UPDATE Orders
-       SET Status = 'DILIVERED'
+       SET Status = 'DILIVERED',dilivery_Date=?,dilivery_Time=?
        WHERE Order_id=?`,
-      [order_id],
+      [diliveryDate,diliveryTime,order_id],
       (error, result, feilds) => {
         if (error) {
           return callback(error);
@@ -299,6 +299,17 @@ module.exports = {
         return callback(null, result);
       }
     );
+  },
+  updateBranchUserEarnings:(user_id,totalCost,callback)=>{
+    pool.query(`UPDATE BranchUser SET totalEarnings=totalEarnings+? WHERE BranchUser_id=?`,
+      [totalCost,user_id],
+      (error,result,feilds)=>{
+        if(error){
+          return callback(error)
+        }
+        return callback(null,result)
+      }
+    )
   },
   getCompletedOrders: (userId, callback) => {
     console.log(userId);
@@ -335,13 +346,13 @@ module.exports = {
   getDataForTodoMail: (order_id, callback) => {
     pool.query(
       `SELECT O.Order_id,B.FirstName AS BranchUserName,BM.Mobile,R.FirstName AS RecieverName,C.FirstName AS CustomerName,O.weight,O.distance,O.Total_Cost,
-      O.Distance_Cost,O.Weight_Cost,O.pickup_Date,O.pickup_Time,C.Email AS CustomerEmail,R.Email AS RecieverEmail
+      O.Distance_Cost,O.Weight_Cost,O.pickup_Date,O.pickup_Time,C.Email AS CustomerEmail,R.Email AS RecieverEmail,O.dilivery_Date,O.dilivery_Time
       FROM Orders O,BranchUser B,BranchUserMobile BM,Reciever R,Customer C
       WHERE O.BranchUser_id=B.BranchUser_id AND BM.BranchUser_id=B.BranchUser_id AND O.recieverId=R.recieverId AND O.cus_id=C.cus_id AND O.Order_id=?`,
       [order_id],
       (error, result, feild) => {
         if (error) {
-          callback(error);
+          return callback(error);
         }
         return callback(null, result);
       }
