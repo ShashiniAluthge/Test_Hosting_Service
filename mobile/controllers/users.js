@@ -13,16 +13,17 @@ const {
   updateDob,
   storeOtpInTable,
   verifyOtp,
-  deleteOtp
+  deleteOtp,
 } = require("../services/users.js");
 
 module.exports = {
   getUsers: (req, res) => {
     getUsers((error, result) => {
       if (error) {
+        console.log(`error is at getUsers: ${error}`)
         return res.json({
           success: 0,
-          message: error.message,
+          message: 'Internal Server Error',
         });
       }
       return res.json({
@@ -37,9 +38,10 @@ module.exports = {
     console.log(email);
     verifyEmail(name, (error, result) => {
       if (error) {
+        console.log(`error is at verifyEmail : ${error}`)
         return res.json({
-          successs: 0,
-          message: error,
+          success: 0,
+          message: 'Internal Server Error',
         });
       }
       if (result.length == 0) {
@@ -54,26 +56,29 @@ module.exports = {
         if (result[0].Email == email) {
           SendMail(email, (err, result) => {
             if (err) {
-              console.log(err);
+              console.log(`error is at SendMail : ${err}`)
               return res.json({
                 success: 0,
-                message: err,
+                message: 'Internal Server Error',
               });
             }
             if (result) {
               console.log(result[1]);
               storeOtpInTable(email,result,(error,result)=>{
-                if(error){
+                if (error) {
+                  console.log(`error is at storeOtpInTable : ${error}`)
                   return res.json({
-                    success:0,
-                    message:error
-                  })
-                }else if(result.affectedRows>0){
+                    success: 0,
+                    message: 'Internal Server Error',
+                  });
+                }
+                else if(result.affectedRows>0){
                   return res.json({
                     success:200,
                     message:'successfully updated'
                   })  
                 }else{
+                  console.log(result)
                   return res.json({
                     success:101,
                     message:'Try Again!'
@@ -95,18 +100,22 @@ module.exports = {
     const email=req.params.email
     SendMail(email, (error, result) => {
       if (error) {
+        console.log(`error is at SendMail : ${error}`)
         return res.json({
           success: 0,
-          message: error,
+          message: 'Internal Server Error',
         });
-      } else if (result.length !=0) {
+      } 
+      else if (result.length !=0) {
         storeOtpInTable(email,result,(error,result)=>{
-          if(error){
+          if (error) {
+            console.log(`error is at storeOtpInTable : ${error}`)
             return res.json({
-              success:0,
-              message:error
-            })
-          }else if(result.affectedRows>0){
+              success: 0,
+              message: 'Internal Server Error',
+            });
+          }
+          else if(result.affectedRows>0){
             return res.json({
               success:200,
               message:'successfully updated'
@@ -133,15 +142,21 @@ module.exports = {
     data.password = hashSync(data.password, salt);
     resetNewPassword(data.name, data.password, (error, result) => {
       if (error) {
+        console.log(`error is at resetNewPassword : ${error}`)
         return res.json({
           success: 0,
-          message: error,
+          message: 'Internal Server Error',
         });
-      }
-      if (result) {
+      } 
+      else if (result.affectedRows>0) {
         return res.json({
           success: 200,
           message: result,
+        });
+      }else{
+        return res.json({
+          success: 200,
+          message: 'Password Save Unsuccessfull',
         });
       }
     });
@@ -152,11 +167,12 @@ module.exports = {
     //const name1=req.body.name;
     logInUserbyName(name, (err, result) => {
       if (err) {
+        console.log(`error is at logInUserbyName: ${err}`)
         return res.json({
           success: 0,
-          message: err,
+          message: 'Internal Server Error',
         });
-      }
+      } 
       if (result.length == 0) {
         return res.status(101).json({
           success: 101,
@@ -179,7 +195,7 @@ module.exports = {
         } else {
           return res.json({
             success: 101,
-            message: "password incoreect",
+            message: "password incorrect",
           });
         }
       }
@@ -192,21 +208,24 @@ module.exports = {
     console.log(data.newpassword);
     logInUserbyName(data.userName, (err, result) => {
       if (err) {
+        console.log(`error is at logInUserbyName: ${err}`)
         return res.json({
           success: 0,
-          message: err,
+          message: 'Internal Server Error',
         });
-      }
+      } 
       if (result) {
         const flag = compareSync(data.oldPassword, result[0].Password);
         if (flag) {
           resetNewPassword(data.userName, data.newpassword, (err, result) => {
             if (err) {
+              console.log(`error is at resetNewPassword: ${err}`)
               return res.json({
                 success: 0,
-                message: err,
+                message: 'Internal Server Error',
               });
-            } else if (result) {
+            } 
+             else if (result) {
               console.log(result);
               return res.json({
                 success: 200,
@@ -228,11 +247,12 @@ module.exports = {
     user_id = Number(req.params.user_id);
     console.log(user_id)
     getProfileDetails(user_id,(error,result)=>{
-      if(error){
+      if (error) {
+        console.log(`error is at getProfileDetails: ${error}`)
         return res.json({
-          success:0,
-          message:error.message
-        })
+          success: 0,
+          message: 'Internal Server Error',
+        });
       }
       return res.json({
         success:200,
@@ -244,11 +264,13 @@ module.exports = {
     const user_id=req.params.user_id;
     const{firstName,lastName}=req.body;
     updateName(firstName,lastName,user_id,(error,result)=>{
-      if(error){
+      if (error) {
+        console.log(`error is at updateName: ${error}`)
         return res.json({
-          success:0,
-          message:error
-        })  
+          success: 0,
+          message: 'Internal Server Error',
+        });
+      }
       else if(result.affectedRows>0){
         console.log(result);
         return res.json({
@@ -262,16 +284,18 @@ module.exports = {
           message:'update Not Successfull!'
         })
       }    
-
+    })
+  },
   verifyOtp:(req,res)=>{
     const email=req.params.email;
     const otp=req.params.otp;
     verifyOtp(email,(error,result)=>{
-      if(error){
-        res.json({
-          success:0,
-          message:error
-        })
+      if (error) {
+        console.log(`error is at verifyOtp: ${error}`)
+        return res.json({
+          success: 0,
+          message: 'Internal Server Error',
+        });
       }
       else if(result.length != 0){
         console.log(new Date(result[0].Expires_at).getTime()>=Date.now());
@@ -308,11 +332,12 @@ module.exports = {
     const email=req.body.email;
 
     updateEmail(email,user_id,(error,result)=>{
-      if(error){
+      if (error) {
+        console.log(`error is at updateEmail: ${error}`)
         return res.json({
-          success:0,
-          message:error
-        })
+          success: 0,
+          message: 'Internal Server Error',
+        });
       }
       else if(result.affectedRows>0){
         console.log(result);
@@ -334,11 +359,12 @@ module.exports = {
     const mobile = req.body.mobile
 
     updateMobile(mobile,user_id,(error,result)=>{
-      if(error){
+      if (error) {
+        console.log(`error is at updateMobile: ${error}`)
         return res.json({
-          success:0,
-          message:error
-        })
+          success: 0,
+          message: 'Internal Server Error',
+        });
       }
       else if(result.affectedRows>0){
         return res.json({
@@ -359,11 +385,12 @@ module.exports = {
     const {currentDate} = req.body
 
     updateDob(currentDate,user_id,(error,result)=>{
-      if(error){
+      if (error) {
+        console.log(`error is at updateDob: ${error}`)
         return res.json({
-          success:0,
-          message:error
-        })
+          success: 0,
+          message: 'Internal Server Error',
+        });
       }
       else if(result.affectedRows>0){
         console.log("controller DOB ")
@@ -379,17 +406,18 @@ module.exports = {
        })
       }
    })
-  },       
-      
+  },          
   deleteOtp:(req,res)=>{
     const email=req.params.email;
     deleteOtp(email,(error,result)=>{
-      if(error){
-        res.json({
-          success:0,
-          message:error
-        })
-      }else if(result.affectedRows>0){
+      if (error) {
+        console.log(`error is at deleteOtp: ${error}`)
+        return res.json({
+          success: 0,
+          message: 'Internal Server Error',
+        });
+      }
+      else if(result.affectedRows>0){
         res.json({
           success:200,
           message:"successfully deleted!"
@@ -403,4 +431,4 @@ module.exports = {
       }
     })
   }
-};
+}
