@@ -1,10 +1,10 @@
 const pool = require("../../config/dbConfig.js");
-const { updateDob } = require("../controllers/users.js");
+const { updateDob, deleteImage } = require("../controllers/users.js");
 
 module.exports = {
   logInUserbyName: (name, callback) => {
     pool.query(
-      `SELECT BranchUser_id,FirstName,Password,NewUser,branchLocation From BranchUser WHERE FirstName=?`,
+      `SELECT BranchUser_id,FirstName,Password,NewUser,branchLocation,profileImageUrl From BranchUser WHERE FirstName=?`,
       [name],
       (error, result, feilds) => {
         if (error) {
@@ -48,7 +48,7 @@ module.exports = {
   },
   getProfileDetails: (user_id, callback) => {
     pool.query(
-      `SELECT b.FirstName,b.LastName,b.StreetNo,b.Street,b.City,b.Email,bm.Mobile,b.DOB
+      `SELECT b.FirstName,b.LastName,b.StreetNo,b.Street,b.City,b.Email,bm.Mobile,b.DOB,b.profileImageUrl
        FROM BranchUser b, BranchUserMobile bm
        WHERE b.BranchUser_id=bm.BranchUser_id AND b.BranchUser_id = ?`,
       [user_id],
@@ -129,5 +129,30 @@ module.exports = {
         return callback(null,result);
       }
     })
+  },
+  updateImageUrl:(user_id,imageUrl,callback)=>{
+    pool.query(
+      `UPDATE BranchUser SET profileImageUrl=? WHERE BranchUser_id=?`,
+      [imageUrl,user_id],
+      (error,result,feilds)=>{
+        if(error){
+          return callback(error)
+        }
+        console.log(result);
+        return callback(null,result)
+      }
+    )
+  },
+  deleteImage:(user_id,callback)=>{
+    pool.query(
+      `UPDATE BranchUser SET profileImageUrl=NULL WHERE BranchUser_id=? `,[user_id],(error,result)=>{
+        if(error){
+          return callback(error);
+        }
+        else{
+          return callback(null,result)
+        }
+      }
+    )
   }
 };
