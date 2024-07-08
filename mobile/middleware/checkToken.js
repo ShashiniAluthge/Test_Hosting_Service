@@ -4,6 +4,8 @@ module.exports = {
   checkToken: (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
+    console.log(`auth header is ${authHeader}`)
+    console.log(`token is ${authHeader}`)
     console.log(token);
     if (token) {
       verify(token, process.env.JWT_SECERET_KEY, (err, decode) => {
