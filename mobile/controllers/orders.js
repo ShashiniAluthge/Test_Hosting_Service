@@ -327,7 +327,7 @@ module.exports = {
       if (selectedCount[0].selectedCount > 0) {
         selectedProvince = await getSelectedProvince(user_id);
       } else if (onGoingCount[0].onGoingCount > 0) {
-        selectedProvince = await getSelectedProvince(user_id); //Cannot select a province
+        selectedProvince = await getSelectedProvince(user_id);
       } else {
         selectedProvince = [{ DiliveryProvince: "NPS" }]; //No Province Selected
       }

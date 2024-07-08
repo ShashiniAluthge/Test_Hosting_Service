@@ -8,7 +8,7 @@ module.exports = {
       service: "gmail",
       auth: {
         user: "ssshashini21@gmail.com",
-        pass: "nxtbmpobvwhkzwdj",
+        pass: "qkqwxmyfjtygfsko",
       },
     });
 
@@ -35,7 +35,7 @@ module.exports = {
       service: "gmail",
       auth: {
         user: "ssshashini21@gmail.com",
-        pass: "nxtbmpobvwhkzwdj",
+        pass: "qkqwxmyfjtygfsko",
       },
     });
 
@@ -95,7 +95,7 @@ module.exports = {
       service: "gmail",
       auth: {
         user: "ssshashini21@gmail.com",
-        pass: "nxtbmpobvwhkzwdj",
+        pass: "qkqwxmyfjtygfsko",
       },
     });
 

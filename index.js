@@ -7,8 +7,6 @@ app.use(cors());
 var cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
-
-
 const userRouter = require("./mobile/routes/users");  //  api/mobile/users/login
 
 const orderRouter = require("./mobile/routes/orders.js");

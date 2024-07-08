@@ -2,8 +2,8 @@ const { verify } = require("jsonwebtoken");
 
 module.exports = {
   checkToken: (req, res, next) => {
-    const authHeader=req.headers['authorization'];
-    const token=authHeader && authHeader.split(' ')[1]
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
     console.log(token);
     if (token) {
       verify(token, process.env.JWT_SECERET_KEY, (err, decode) => {
@@ -13,6 +13,7 @@ module.exports = {
             message: "Invalid token",
           });
         } else {
+          console.log("im inside tokrn");
           next();
         }
       });
